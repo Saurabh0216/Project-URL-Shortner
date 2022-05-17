@@ -28,7 +28,7 @@ const isValid = (value) => {
         const isUrlPresent = await urlModel.findOne({longUrl:longUrl})
 
         if(isUrlPresent){
-            return res.status(200).send({status:true, message:"Short URL already created for this provide Long URL", data:isUrlPresent})
+            return res.status(400).send({status:true, message:"Short URL already created for this provide Long URL", data:isUrlPresent})
         }
 
 

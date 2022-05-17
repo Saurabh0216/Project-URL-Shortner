@@ -1,5 +1,4 @@
 const express = require('express');
-const shortid = require('shortid')
 const router = express.Router();
 const urlController = require('../controller/urlController');
 
