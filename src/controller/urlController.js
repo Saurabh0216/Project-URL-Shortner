@@ -27,8 +27,11 @@ const isValid = (value) => {
 }
   const createUrl = async(req,res)=> 
  {
+     
+    
+    
+    //  if(longUrl){
     try {
-        
         const longUrl = req.body.longUrl
         const baseUrl = "http://localhost:3000"
         
@@ -45,22 +48,25 @@ const isValid = (value) => {
 
         if(isUrlPresent){
             return res.status(200).send({status:true, message:"Short URL already created for this provide Long URL", data:isUrlPresent})
-        }
+        }else{
+            const urlCode = shortid.generate() // generate shortid for a request
+            const shortUrl = baseUrl+ '/' + urlCode
 
+            const createShortUrl = await urlModel.create({urlCode,longUrl,shortUrl})
+            await SET_ASYNC(`${longUrl}`, JSON.stringify(createShortUrl))
+            return res.status(201).send({status:true,message:"Short Url create sucessfully",data:createShortUrl})
+         }
+    
 
-        const urlCode = shortid.generate()   // generate shortid for a request
-        const shortUrl = baseUrl+ '/' + urlCode
-
-        const urlCreate = await urlModel.create({urlCode,longUrl,shortUrl})
-       
-       
-        {
-             return res.status(201).send({status:true, message:"Short Url created successfully!",data:urlCreate})
-        }
-    } catch (error) {
+} catch (error) {
         return res.status(500).send({status:false, message: error.message})
-        
-    }
+     }
+    // }else{
+    //     return res.status(401).send({status:false, message:"Long url must present in the body"})
+
+    // }
+    
+   
  };
 
  //..................................Get url..................................//
@@ -78,7 +84,7 @@ const isValid = (value) => {
         if(checkUrlData) {
            return  res.redirect(urlparse.longUrl)
         }
-
+         //if not find in case memory then it start finding in mongodb
         isUrlCodePresent = await urlModel.findOne({urlCode:urlCode})
        
         if(!isUrlCodePresent){
