@@ -3,7 +3,7 @@ const redis = require("redis");
 const { promisify } = require("util");
 const urlModel = require("../model/urlModel")
 
-// Create server for chaching
+// connect redis 
 const redisClient = redis.createClient(
     18639,
     "redis-18639.c212.ap-south-1-1.ec2.cloud.redislabs.com",
@@ -78,7 +78,7 @@ const getCode = async (req, res) => {
         const urlparse = JSON.parse(checkUrlData)
 
         if (checkUrlData) {
-            return res.redirect(urlparse.longUrl)
+            return res.status(302).redirect(urlparse.longUrl)
         }
 
         //if not find in case memory then it start finding in mongodb
@@ -91,7 +91,7 @@ const getCode = async (req, res) => {
         const urlData = req.params.urlCode
 
         await SET_ASYNC(`${urlData}`, JSON.stringify(isUrlCodePresent))
-        return res.redirect(isUrlCodePresent.longUrl)
+        return res.status(302).redirect(isUrlCodePresent.longUrl)
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
